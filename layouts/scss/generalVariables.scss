@@ -10,9 +10,16 @@
     font-weight: normal;
 }
 
+@font-face {
+    font-family: 'BoschSans-Regular-Bold';
+    src: url("@/assets/BoschSans-Regular.ttf");
+    font-weight: bold;
+}
+
 // bosch pallete
 :root{
     --white_absolute: #FFFFFF;
+    --gray_super_light: #e7e9ec;
     --gray_light: #E0E2E5;
     --gray_shadow: #D0D4D8;
     --red_default: #ED0007;

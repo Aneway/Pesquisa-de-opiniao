@@ -6,47 +6,47 @@
           <img class="logo" src="@/static/logoBosch.svg"/>
       </div>
     </header>
-    <main>
-      
-      <div class="edit_form">
-        <span>Nome do Formuário</span>
-        <input></input>
-        <Divider/>
-        <span>Tipo de Formulário: </span>
-        <RadioButton name="identify" value="Identificável" v-model="identify" />
-        <label>Identificável</label>
-        <RadioButton name="identify" value="Não Identificável" v-model="identify" />
-        <label>Não Identificável</label>
-        <Divider/>
-        <!-- <div v-for="(item,index) in questions"> -->
-        <div  v-for="questions,index of aaaa">
-
-          <!-- <Dropdown v-model="selectedCity" :options="cities" optionLabel="name" placeholder="Select a City" /> -->
-          <span>Pergunta </span>
-          <br></br><Dropdown v-model="selectedType" :options="types" optionLabel="name" placeholder="Tipo da Pergunta"/>
-          <br></br><Textarea v-model="value" class="questionTextArea" rows="5" cols="30" placeholder="Este aqui é o enunciado da pergunta"/>
+    <main>  
+      <div class="main_content">
+        <div class="edit_form">
+          <span>Nome do Formuário</span>
           <br></br>
-          <InputText v-if="selectedType.name=='Escolha única'" v-model="valueUnic"></InputText>
-          <Button v-if="selectedType.name=='Escolha única'" @click="addUnic">+</Button>
-          <div v-for="category,index of escolhaUnica">
-            <RadioButton v-if="selectedType.name=='Escolha única'" :id="category.key" name="question" :value="escolhaUnica.question" />
-            <label v-if="selectedType.name=='Escolha única'" for="category.key">{{category.question}}</label>
-            <Button v-if="selectedType.name=='Escolha única'" @click="removeUnic(index)">x</Button>
-          </div>
-        
-          
-          
-          
+          <InputText class="inputNameForm" type="text" placeholder="Este aqui é o nome do formulário"/>
           <Divider/>
-        </div>
-        
-        
-        <Button label="Nova Pergunta" icon="pi pi-plus" class="p-button-text" @click="addQuestion()"/>
 
+          <span>Tipo de Formulário </span>
+          <br></br>
+          <div class="identify">
+            <label><RadioButton value="Identificável" v-model="identify"/> Identificável</label>
+            <label><RadioButton value="Não Identificável" v-model="identify"/> Não Identificável</label>
+          </div>
+          <Divider/>
+
+          <div  v-for="questions,index of allQuestions">
+            <div class="questionType">
+              <span>Pergunta {{index + 1}}</span>
+              <Dropdown class="dropdown_type" v-model="questions.dropBox" :options="types" optionLabel="name" placeholder="Tipo da Pergunta"/>
+            </div>
+            
+            <br><Textarea v-model="questions.field" class="questionTextArea" rows="5" cols="30" placeholder="Este aqui é o enunciado da pergunta"/>
+            <br>
+            <InputText class="optionsQuestion" v-if="questions.dropBox.name=='Escolha única'" v-model="questions.aux" placeholder="Adicionar opção"></InputText>
+            <Button v-if="questions.dropBox.name=='Escolha única'" @click="addUnic(questions.escolhaUnica, questions.aux, index)">+</Button>
+
+            <div v-for="category,index of questions.escolhaUnica">
+              <br>
+              <RadioButton v-if="questions.dropBox.name=='Escolha única'" :id="category.key" name="question" :value="escolhaUnica.question" />
+              <Button class="btnRemoveQuestion"v-if="questions.dropBox.name=='Escolha única'" @click="removeUnic(index, questions.escolhaUnica, questions.aux)">x</Button>
+              <label v-if="questions.dropBox.name=='Escolha única'" for="category.key">{{category.question}}</label>
+            </div>
+            <br>
+            <Divider/>
+          </div>
+          <Button label="Nova Pergunta" icon="pi pi-plus" class="p-button-text" @click="addQuestion()"/>
+        </div>
+        <button class="btn_Salvar">FINALIZAR E SALVAR</button>
       </div>
-      <!-- <Button label="Finalizar e Salvar"></Button> -->
     </main>
-    
   </div>
 </template>
 
@@ -80,32 +80,33 @@ export default {
       escolhaUnica: [],
       multiplaEscolha:[{}],
       valueUnic:'',
-      aaaa:[]
+      allQuestions:[{dropBox: "", field: "", escolhaUnica: [], aux: ""}]
       }
 		},
 
     methods: {
-      addUnic(){
-        this.escolhaUnica.push({question:this.valueUnic})
-        this.valueUnic = ''
+      // c = escolha unica
+      addUnic(c, aux, index){
+        c.push({question:aux})
+      this.allQuestions[index].aux = ''
+
       },
-      removeUnic(index){
-        this.escolhaUnica.splice(index,1)
-        this.valueUnic = ''
+      removeUnic(index, c, aux){
+        c.splice(index,1)
       },
 
       addQuestion(){
-        this.aaaa.push({questions:this.plusQuestions})
-        this.allQuestions = ''
-	    }
-      
-
-      
-	}
+        this.allQuestions.push({dropBox: "", field: "", escolhaUnica: [], aux: ""})
+	    },
+	  }
 }
 </script>
 
 <style lang="scss" scoped>
+
+*{
+  font-family: 'BoschSans-Regular';
+}
 
 #supergraphic{
   background-image: url("@/static/supergraphic.svg");
@@ -132,19 +133,80 @@ main{
   align-items: center;
   justify-content: center;
 
-  .edit_form{
-    background: var(--white_absolute);
-    height: 500px;
-    width: 850px;
-    border-radius: 6px;
-    box-sizing: border-box; //para criar uma borda interna
-    padding: 30px; //tamanho da borda interna
-    overflow-y:scroll;
+  .main_content{
+    .btn_Salvar{
+      background-color: #e61919; 
+      border: none;
+      color: white;
+      text-align: center;
+      font-size: 12px;
+      font-weight: bold;
+      width: 161px;
+      height: 32px;
+      margin-top: 40px;
+      //alinhar
+      display: block;
+      margin-left: auto;
 
-    .questionTextArea{
-      width: 550px;
-      height: 50px;
+      &:hover{
+        cursor: pointer;
 
+      }
+      &:active {
+        position:relative;
+        background-color: var(--red_dark);
+      }
+    }
+
+    .edit_form{
+      background: var(--white_absolute);
+      height: 500px;
+      width: 850px;
+      border-radius: 6px;
+      box-sizing: border-box; //para criar uma borda interna
+      padding: 30px; //tamanho da borda interna
+      overflow-y:scroll;
+
+      .questionTextArea{
+        width: 500px;
+        height: 50px;
+      }
+      .inputNameForm{
+        width: 400px;
+        height: 40px;
+      }
+      span{
+        font-size: 17px;
+      }
+      .identify{
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+      }
+      .btnRemoveQuestion{
+        background-color: var(--red_default);
+        border-radius:20px;
+        border-color: var(--red_default);
+        width: 20px;
+        height: 20px;
+        display:inline-block;
+        cursor:pointer;
+        font-size:13px;
+        padding: 0.5px 1px;
+
+      }
+      .dropdown_type{
+        height: 40px;
+        background-color: var(--gray_super_light);
+      }
+      .questionType{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .optionsQuestion{
+        width: 150px;
+      }
     }
   }
 }
